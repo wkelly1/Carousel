@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="carousel.js"></script>
-    <link rel="stylesheet" type="text/css" href="carousel.css" />
+    <script src="../carousel.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../carousel.min.css" />
+    <link rel="stylesheet" type="text/css" href="main.css" />
     <title>Carousel</title>
   </head>
   <body>
@@ -12,7 +13,7 @@
     <div
       class="carousel-container"
       style="background-color: lightcoral;"
-      id="test"
+      id="example"
     >
       <div class="carousel">
         <div class="carousel-item">
@@ -58,10 +59,10 @@
 
 <script>
   let settings = {
-    id: "test",
+    id: "example",
     rotation: {
       amount: 1, // How many elements it moves per rotation
-      timingFunction: "linear", // Timing function of the movement
+      timingFunction: "ease-in-out", // Timing function of the movement
       duration: 100, // How long the movement takes
     },
     buttons: {
@@ -69,8 +70,8 @@
       disableForSingle: false, // Disables the buttons when there is only one element in the carousel
     },
     display: {
-      number: 1, // Number of elements to display at a time,
-      duration: 1000, // If specified then the carousel will rotate every time that number of milliseconds has elapsed
+      number: 5, // Number of elements to display at a time,
+      duration: 2000, // If specified then the carousel will rotate every time that number of milliseconds has elapsed
       startOffset: 0, // Waits this long before auto rotating,
       direction: "left", // The direction to move the carousel either left or right
     },
@@ -79,5 +80,5 @@
     },
   };
 
-  let test = new Carousel(settings);
+  let example = new Carousel(settings);
 </script>
