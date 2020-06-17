@@ -1,0 +1,43 @@
+/** EXAMPLE **/
+html{
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+body{
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    max-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: monospace;
+    font-weight:bold;
+    font-size: 30px;
+}
+
+.example-item{
+    background-color: lightblue;
+    width: 200px; 
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dotted black;
+}
+
+.example-button{
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    background-color: white;
+    display: flex;
+
+    justify-content: center;
+    padding-top: 7px;
+    border-radius: 50%;
+    font-size: 20px;
+    text-align: center;
+    margin: 0 10px;
+}
