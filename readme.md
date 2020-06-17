@@ -30,10 +30,10 @@ let settings = {
 
 ## Using the carousel
 ```
-    <script src="carousel.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="carousel.min.css" />
+<script src="carousel.min.js"></script>
+<link rel="stylesheet" type="text/css" href="carousel.min.css" />
 
-    <script>
-        let example = new Carousel(settings);
-    </script>
+<script>
+    let example = new Carousel(settings);
+</script>
 ```
