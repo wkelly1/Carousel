@@ -64,20 +64,20 @@ class Carousel {
     } catch (e) {}
 
     try {
-        if (this.settings.buttons.disableForSingle && this.totalItems === 1) {
-            this.duration = 0;
-          let buttons = this.container.getElementsByClassName(
-            "carousel-button-next"
-          );
-          for (let i = 0; i < buttons.length; i++) {
-            buttons[i].style.display = "none";
-          }
-          buttons = this.container.getElementsByClassName("carousel-button-prev");
-          for (let i = 0; i < buttons.length; i++) {
-            buttons[i].style.display = "none";
-          }
+      if (this.settings.buttons.disableForSingle && this.totalItems === 1) {
+        this.duration = 0;
+        let buttons = this.container.getElementsByClassName(
+          "carousel-button-next"
+        );
+        for (let i = 0; i < buttons.length; i++) {
+          buttons[i].style.display = "none";
         }
-      } catch (e) {}
+        buttons = this.container.getElementsByClassName("carousel-button-prev");
+        for (let i = 0; i < buttons.length; i++) {
+          buttons[i].style.display = "none";
+        }
+      }
+    } catch (e) {}
 
     this.moving = false; // Stores whether an animation is currently occurring
     for (let i = 0; i < this.displayNo; i++) {
@@ -88,19 +88,26 @@ class Carousel {
 
     // Make copies of elements
     if (this.displayNo > this.totalItems) {
-        console.log([...this.items].map((item) => {return item.innerText}));
-        let index = 0;
-        for (let i = 0; i < this.displayNo - this.totalItems; i++) {
-          let el = this.elements[index].cloneNode(true);
-          //this.items[0].parentNode.insertBefore(el, this.items[0].nextSibling);
-          this.container.firstElementChild.appendChild(el);
-          index = this.mod(index + 1, this.totalItems);
-        }
-       
-        console.log("added");
-        console.log([...this.items].map((item) => {return item.innerText}));
+      console.log(
+        [...this.items].map((item) => {
+          return item.innerText;
+        })
+      );
+      let index = 0;
+      for (let i = 0; i < this.displayNo - this.totalItems; i++) {
+        let el = this.elements[index].cloneNode(true);
+        //this.items[0].parentNode.insertBefore(el, this.items[0].nextSibling);
+        this.container.firstElementChild.appendChild(el);
+        index = this.mod(index + 1, this.totalItems);
       }
 
+      console.log("added");
+      console.log(
+        [...this.items].map((item) => {
+          return item.innerText;
+        })
+      );
+    }
 
     // Lock the width of the container
     this.container.style.maxWidth = this.container.clientWidth + "px";
@@ -130,50 +137,7 @@ class Carousel {
       });
     }
 
-    
-
-    // Add rotate time if provided
-    let offset, duration, direction;
-    try {
-      offset = this.settings.display.startOffset;
-    } catch (e) {
-      offset = 0;
-    }
-    try {
-      duration = this.settings.display.duration;
-    } catch (e) {
-      duration = 0;
-    }
-    try {
-      if (
-        this.settings.display.direction === "right" ||
-        this.settings.display.direction === "left"
-      ) {
-        direction = this.settings.display.direction;
-      } else {
-        direction = "right";
-      }
-    } catch (e) {
-      direction = "right";
-    }
-    console.log(offset, duration, direction);
-    if (duration > 0) {
-      if (direction) {
-        if (direction === "right") {
-          setTimeout(() => {
-            window.setInterval(() => {
-              this.moveNext();
-            }, duration);
-          }, offset);
-        } else {
-          setTimeout(() => {
-            window.setInterval(() => {
-              this.movePrev();
-            }, duration);
-          }, offset);
-        }
-      }
-    }
+    this.addRotationEventListeners();
   }
 
   mod(n, m) {
@@ -300,4 +264,79 @@ class Carousel {
   movePrev() {
     this.moveCarouselLeft(this.moveAmount);
   }
+
+  addRotationEventListeners() {
+    // Add rotate time if provided
+    let offset, duration, direction;
+    try {
+      offset = this.settings.display.startOffset;
+    } catch (e) {
+      offset = 0;
+    }
+    try {
+      duration = this.settings.display.duration;
+    } catch (e) {
+      duration = 0;
+    }
+    try {
+      if (
+        this.settings.display.direction === "right" ||
+        this.settings.display.direction === "left"
+      ) {
+        direction = this.settings.display.direction;
+      } else {
+        direction = "right";
+      }
+    } catch (e) {
+      direction = "right";
+    }
+
+    let moveNextInterval = (duration) => {
+      return window.setInterval(() => {
+        this.moveNext();
+      }, duration);
+    }
+
+    let movePrevInterval = (duration) => {
+      return window.setInterval(() => {
+        this.movePrev();
+      }, duration);
+    }
+
+    console.log(offset, duration, direction);
+    if (duration > 0) {
+      if (direction) {
+        if (direction === "right") {
+          setTimeout(() => {
+            this.rotation = moveNextInterval(duration);
+          }, offset);
+        } else {
+          setTimeout(() => {
+            this.rotation = movePrevInterval(duration);
+          }, offset);
+        }
+      }
+    }
+  }
+
+  removeRotationEventListeners(){
+      window.clearInterval(this.rotation);
+  }
+
+  updateDisplayDuration(duration) {
+    if (duration < 0){
+      throw 'Duration cannot be negative';
+    }
+    if (duration === 0) {
+      this.duration = 0;
+      this.removeRotationEventListeners();
+    } else {
+      if (this.duration === 0) {
+        this.duration = duration;
+        this.addRotationEventListeners();
+      }
+    }
+    return true;
+  }
+  
 }
