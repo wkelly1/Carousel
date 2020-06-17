@@ -1,7 +1,8 @@
 # Carousel.js
 
 ## [See the example here](https://wkelly1.github.io/)
-![Example](https://github.com/wkelly1/Carousel-js/tree/master/examples/images/example.png)
+
+![Example](https://github.com/wkelly1/Carousel-js/blob/master/examples/images/example.png?raw=true)
 
 
 ## Options
