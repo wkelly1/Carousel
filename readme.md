@@ -1,9 +1,11 @@
-
 # Carousel.js
 
 ## [See the example here](https://wkelly1.github.io/)
+![Example](https://github.com/wkelly1/Carousel-js/tree/master/examples/images/example.png)
+
 
 ## Options
+
 ```
 let settings = {
     id: "example",
@@ -29,11 +31,38 @@ let settings = {
 ```
 
 ## Using the carousel
+
+### Add the library
 ```
 <script src="carousel.min.js"></script>
 <link rel="stylesheet" type="text/css" href="carousel.min.css" />
+```
 
+### Add the markup
+```
+<div class="carousel" id="example">
+    <div class="carousel-item">
+        <div class="your-item-class">
+        1
+        </div>
+    </div>
+    <div class="carousel-item">
+        <div class="your-item-class">
+        2
+        </div>
+    </div>
+
+    <div class="carousel-button-next your-button-class">👉</div>
+    <div class="carousel-button-prev your-button-class">👈</div>
+</div>
+```
+
+### Initialise the carousel
+```
 <script>
+    let settings = {
+        id = "example" // Must link to an id
+    }
     let example = new Carousel(settings);
 </script>
 ```
