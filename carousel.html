@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="carousel.js"></script>
+    <link rel="stylesheet" type="text/css" href="carousel.css" />
+    <title>Carousel</title>
+  </head>
+  <body>
+    <h1>Carousel.js</h1>
+    <div
+      class="carousel-container"
+      style="background-color: lightcoral;"
+      id="test"
+    >
+      <div class="carousel">
+        <div class="carousel-item">
+          <div class="example-item">
+            1
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="example-item">
+            2
+          </div>
+        </div>
+        
+
+        <div class="carousel-item">
+          <div class="example-item">
+            3
+          </div>
+        </div>
+        
+        <div class="carousel-item">
+          <div class="example-item">
+            4
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="example-item">
+            5
+          </div>
+        </div>  
+        <div class="carousel-item">
+            <div class="example-item">
+              6
+            </div>
+          </div>
+
+        <div class="carousel-button-next example-button">👉</div>
+        <div class="carousel-button-prev example-button">👈</div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  let settings = {
+    id: "test",
+    rotation: {
+      amount: 1, // How many elements it moves per rotation
+      timingFunction: "linear", // Timing function of the movement
+      duration: 100, // How long the movement takes
+    },
+    buttons: {
+      hide: false, // Whether to hide the buttons
+      disableForSingle: false, // Disables the buttons when there is only one element in the carousel
+    },
+    display: {
+      number: 1, // Number of elements to display at a time,
+      duration: 1000, // If specified then the carousel will rotate every time that number of milliseconds has elapsed
+      startOffset: 0, // Waits this long before auto rotating,
+      direction: "left", // The direction to move the carousel either left or right
+    },
+    class: {
+      itemClassName: "carousel-item", // Used if you have altered the class for an item
+    },
+  };
+
+  let test = new Carousel(settings);
+</script>
