@@ -1,342 +1,391 @@
 // Carousel
 class Carousel {
   constructor(settings) {
-    this.settings = settings;
+    this._settings = settings;
 
-    try {
-      this.itemClassName = this.settings.class.itemClassName;
-    } catch (e) {
-      this.itemClassName = "carousel-item";
+    if (!this._initializeSettings(this._settings)) {
+      throw "Missing required settings";
     }
 
-    try {
-      this.displayNo = this.settings.display.number;
-    } catch (e) {
-      this.displayNo = 1;
-    }
-    try {
-      this.moveAmount = this.settings.rotation.amount;
-    } catch (e) {
-      this.moveAmount = 1;
-    }
+  
 
-    try {
-      document.documentElement.style.setProperty(
-        "--timingFunction",
-        this.settings.rotation.timingFunction
-      );
-    } catch (e) {}
+    // Set timing function
+    document.documentElement.style.setProperty(
+      "--timingFunction",
+      this._timingFunction
+    );
 
-    try {
-      this.duration = this.settings.rotation.duration;
+    // Set duration of animation
+    document.documentElement.style.setProperty(
+      "--duration",
+      this._duration + "ms"
+    );
 
-      document.documentElement.style.setProperty(
-        "--duration",
-        this.settings.rotation.duration + "ms"
-      );
-    } catch (e) {
-      this.duration = 500;
+    this._container = document.getElementById(this._id); // The main container
+    if (!this._container){
+      throw "Container does not exist";
     }
 
-    this.container = document.getElementById(this.settings.id); // The main container
-    this.items = this.container.getElementsByClassName(this.itemClassName); // The items of the carousel
-    console.log(this.container);
-    this.totalItems = this.items.length; // The total number of items
+    this._items = this._container.getElementsByClassName(this._itemClassName); // The items of the carousel
+    this._totalItems = this._items.length; // The total number of items
 
     // Set up circular queue
-    this.front = 0;
-    this.back = this.displayNo - 1;
-    this.elements = [...this.items];
+    this._front = 0;
+    this._back = this._displayNo - 1;
+    this._elements = [...this._items];
 
-    try {
-      if (this.settings.buttons.hide) {
-        let buttons = this.container.getElementsByClassName(
-          "carousel-button-next"
-        );
-        for (let i = 0; i < buttons.length; i++) {
-          buttons[i].style.display = "none";
-        }
-        buttons = this.container.getElementsByClassName("carousel-button-prev");
-        for (let i = 0; i < buttons.length; i++) {
-          buttons[i].style.display = "none";
-        }
+    // Hide buttons if specified
+    if (this._buttonsHide) {
+      let buttons = this._container.getElementsByClassName(
+        "carousel-button-next"
+      );
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style.display = "none";
       }
-    } catch (e) {}
-
-    try {
-      if (this.settings.buttons.disableForSingle && this.totalItems === 1) {
-        this.duration = 0;
-        let buttons = this.container.getElementsByClassName(
-          "carousel-button-next"
-        );
-        for (let i = 0; i < buttons.length; i++) {
-          buttons[i].style.display = "none";
-        }
-        buttons = this.container.getElementsByClassName("carousel-button-prev");
-        for (let i = 0; i < buttons.length; i++) {
-          buttons[i].style.display = "none";
-        }
-      }
-    } catch (e) {}
-
-    this.moving = false; // Stores whether an animation is currently occurring
-    for (let i = 0; i < this.displayNo; i++) {
-      if (this.items[i]) {
-        this.items[i].classList.add("active");
+      buttons = this._container.getElementsByClassName("carousel-button-prev");
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style.display = "none";
       }
     }
 
-    // Make copies of elements
-    if (this.displayNo > this.totalItems) {
-      console.log(
-        [...this.items].map((item) => {
-          return item.innerText;
-        })
+    // Hide buttons if only one element if specified
+    if (this._disableForSingle && this._totalItems === 1) {
+      this._duration = 0;
+      let buttons = this._container.getElementsByClassName(
+        "carousel-button-next"
       );
-      let index = 0;
-      for (let i = 0; i < this.displayNo - this.totalItems; i++) {
-        let el = this.elements[index].cloneNode(true);
-        //this.items[0].parentNode.insertBefore(el, this.items[0].nextSibling);
-        this.container.firstElementChild.appendChild(el);
-        index = this.mod(index + 1, this.totalItems);
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style.display = "none";
       }
+      buttons = this._container.getElementsByClassName("carousel-button-prev");
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style.display = "none";
+      }
+    }
 
-      console.log("added");
-      console.log(
-        [...this.items].map((item) => {
-          return item.innerText;
-        })
-      );
+    this._moving = false; // Stores whether an animation is currently occurring
+
+    // Displays all elements
+    for (let i = 0; i < this._displayNo; i++) {
+      if (this._items[i]) {
+        this._items[i].classList.add("active");
+      }
+    }
+
+    // Make copies of elements if required
+    if (this._displayNo > this._totalItems) {
+      let index = 0;
+      for (let i = 0; i < this._displayNo - this._totalItems; i++) {
+        let el = this._elements[index].cloneNode(true);
+        this._container.firstElementChild.appendChild(el);
+        index = this._mod(index + 1, this._totalItems);
+      }
     }
 
     // Lock the width of the container
-    this.container.style.maxWidth = this.container.clientWidth + "px";
-    this.container.style.width = "100%";
+    this._container.style.maxWidth = this._container.clientWidth + "px";
+    this._container.style.width = "100%";
 
-    // Add next button event listeners
+    this._addButtonEventListeners();
+    this._addAutoRotationCallbacks();
+  }
+
+  _initializeSettings(settings) {
+    let defaults = {
+      rotation: {
+        amount: 1, // How many elements it moves per rotation
+        timingFunction: "ease-in-out", // Timing function of the movement
+        duration: 500, // How long the movement takes
+      },
+      buttons: {
+        hide: false, // Whether to hide the buttons
+        disableForSingle: false, // Disables the buttons when there is only one element in the carousel
+      },
+      display: {
+        number: 5, // Number of elements to display at a time,
+        duration: 0, // If specified then the carousel will rotate every time that number of milliseconds has elapsed
+        startOffset: 0, // Waits this long before auto rotating,
+        direction: "left", // The direction to move the carousel either left or right
+      },
+      class: {
+        itemClassName: "carousel-item", // Used if you have altered the class for an item
+      },
+    };
+
+    // Check that the object contains the required values
+    if (settings?.id === undefined) {
+      return false;
+    } else {
+      this._id = settings.id;
+    }
+
+    // Check for other settings and set to default if not provided
+    if (settings?.rotation?.amount === undefined) {
+      this._moveAmount = defaults.rotation.amount;
+    } else {
+      this._moveAmount = settings.rotation.amount;
+    }
+
+    if (settings?.rotation?.duration === undefined) {
+      this._duration = defaults.rotation.duration;
+    } else {
+      this._duration = settings.rotation.duration;
+    }
+
+    if (settings?.rotation?.timingFunction === undefined) {
+      this._timingFunction = defaults.rotation.timingFunction;
+    } else {
+      this._timingFunction = settings.rotation.timingFunction;
+    }
+
+    if (settings?.buttons?.hide === undefined) {
+      this._buttonsHide = defaults.buttons.hide;
+    } else {
+      this._buttonsHide = settings.buttons.hide;
+    }
+
+    if (settings?.buttons?.disableForSingle === undefined) {
+      this._disableForSingle = defaults.buttons.disableForSingle;
+    } else {
+      this._disableForSingle = settings.buttons.disableForSingle;
+    }
+
+    if (settings?.display?.number === undefined) {
+      this._displayNo = defaults.display.number;
+    } else {
+      this._displayNo = settings.display.number;
+    }
+
+    if (settings?.display?.duration === undefined) {
+      this._rotationDuration = defaults.display.duration;
+    } else {
+      this._rotationDuration = settings.display.duration;
+    }
+
+    if (settings?.display?.startOffset === undefined) {
+      this._startOffset = defaults.display.startOffset;
+    } else {
+      this._startOffset = settings.display.startOffset;
+    }
+
+    if (settings?.display?.direction === undefined) {
+      this._direction = defaults.display.direction;
+    } else {
+      this._direction = settings.display.direction;
+    }
+
+    if (settings?.class?.itemClassName === undefined) {
+      this._itemClassName = defaults.class.itemClassName;
+    } else {
+      this._itemClassName = settings.class.itemClassName;
+    }
+
+    return true;
+  }
+
+  /**
+   * Adds the event listeners for the next and back
+   */
+  _addButtonEventListeners() {
     let next, prev;
-    if (this.settings.nextBtnClass) {
-      next = document.getElementsByClassName(this.settings.nextBtnClass)[0];
+    if (this._settings.nextBtnClass) {
+      next = document.getElementsByClassName(this._settings.nextBtnClass)[0];
     } else {
       next = document.getElementsByClassName("carousel-button-next")[0];
     }
 
-    if (this.settings.backBtnClass) {
-      prev = document.getElementsByClassName(this.settings.backBtnClass)[0];
+    if (this._settings.backBtnClass) {
+      prev = document.getElementsByClassName(this._settings.backBtnClass)[0];
     } else {
       prev = document.getElementsByClassName("carousel-button-prev")[0];
     }
+
     if (next) {
       next.addEventListener("click", () => {
-        this.moveNext();
+        this._moveNext();
       });
     }
     if (prev) {
       prev.addEventListener("click", () => {
-        this.movePrev();
+        this._movePrev();
       });
     }
-
-    this.addRotationEventListeners();
   }
 
-  mod(n, m) {
+  /**
+   * Adds the call backs to make the carousel automatically rotate
+   */
+  _addAutoRotationCallbacks() {
+    // Add rotate time if provided
+    let moveNextInterval = (duration) => {
+      return window.setInterval(() => {
+        this._moveNext();
+      }, duration);
+    };
+
+    let movePrevInterval = (duration) => {
+      return window.setInterval(() => {
+        this._movePrev();
+      }, duration);
+    };
+
+    if (this._rotationDuration > 0) {
+      if (this._direction) {
+        if (this._direction === "right") {
+          setTimeout(() => {
+            this._rotation = moveNextInterval(this._rotationDuration);
+          }, this._startOffset);
+        } else {
+          setTimeout(() => {
+            this._rotation = movePrevInterval(this._rotationDuration);
+          }, this._startOffset);
+        }
+      }
+    }
+  }
+
+  _removeRotationEventListeners() {
+    window.clearInterval(this._rotation);
+  }
+
+  _mod(n, m) {
     return ((n % m) + m) % m;
   }
 
-  disableInteraction() {
-    this.moving = true;
+  _disableInteraction() {
+    this._moving = true;
   }
 
-  enableInteraction() {
-    this.moving = false;
+  _enableInteraction() {
+    this._moving = false;
   }
 
-  moveCarouselLeft(noSteps) {
+  _moveCarouselLeft(noSteps) {
     // Check if carousel is moving, if not, allow interaction
-    if (!this.moving) {
+    if (!this._moving) {
       // temporarily disable interactivity
-      this.disableInteraction();
+      this._disableInteraction();
 
-      this.front = this.mod(this.front + noSteps, this.totalItems);
-      this.back = this.mod(this.back + noSteps, this.totalItems);
+      this._front = this._mod(this._front + noSteps, this._totalItems);
+      this._back = this._mod(this._back + noSteps, this._totalItems);
 
       // Slide all of the elements over
-      let moveAmount = 0; //noSteps * this.items[0].offsetWidth;
+      let moveAmount = 0; //noSteps * this._items[0].offsetWidth;
       for (let i = 0; i < noSteps; i++) {
-        moveAmount += this.items[i].offsetWidth;
+        moveAmount += this._items[i].offsetWidth;
       }
       document.documentElement.style.setProperty(
         "--moveAmount",
         "-" + moveAmount + "px"
       );
 
-      let diff = this.totalItems - noSteps;
+      let diff = this._totalItems - noSteps;
 
       // Add the missing elements
-      let index = this.mod(this.front + diff, this.totalItems);
+      let index = this._mod(this._front + diff, this._totalItems);
       for (let i = 0; i < noSteps; i++) {
-        let el = this.elements[index].cloneNode(true);
+        let el = this._elements[index].cloneNode(true);
         el.classList.remove("active");
-        this.container.firstElementChild.appendChild(el);
-        index = this.mod(index + 1, this.totalItems);
+        this._container.firstElementChild.appendChild(el);
+        index = this._mod(index + 1, this._totalItems);
       }
 
-      for (let i = 0; i < this.displayNo + noSteps; i++) {
-        this.items[i].classList.add("active");
+      for (let i = 0; i < this._displayNo + noSteps; i++) {
+        this._items[i].classList.add("active");
       }
 
-      for (let i = 0; i < this.items.length; i++) {
-        this.items[i].classList.add("slide");
+      for (let i = 0; i < this._items.length; i++) {
+        this._items[i].classList.add("slide");
       }
 
       // Wait for animation to end
       setTimeout(() => {
-        for (let j = 0; j < this.items.length; j++) {
-          this.items[j].classList.remove("slide");
+        for (let j = 0; j < this._items.length; j++) {
+          this._items[j].classList.remove("slide");
         }
 
         for (let j = 0; j < noSteps; j++) {
-          this.items[0].remove();
+          this._items[0].remove();
         }
 
-        this.enableInteraction();
-      }, this.duration + 10);
+        this._enableInteraction();
+      }, this._duration + 10);
     }
   }
 
-  moveCarouselRight(noSteps) {
+  _moveCarouselRight(noSteps) {
     // Check if carousel is moving, if not, allow interaction
-    if (!this.moving) {
+    if (!this._moving) {
       // temporarily disable interactivity
-      this.disableInteraction();
+      this._disableInteraction();
 
-      this.front = this.mod(this.front - noSteps, this.totalItems);
-      this.back = this.mod(this.back - noSteps, this.totalItems);
+      this._front = this._mod(this._front - noSteps, this._totalItems);
+      this._back = this._mod(this._back - noSteps, this._totalItems);
 
       // Slide all of the elements over
-      let moveAmount = 0; //noSteps * this.items[0].offsetWidth;
+      let moveAmount = 0; //noSteps * this._items[0].offsetWidth;
       for (let i = 0; i < noSteps; i++) {
-        moveAmount += this.items[i].offsetWidth;
+        moveAmount += this._items[i].offsetWidth;
       }
       document.documentElement.style.setProperty(
         "--moveAmount",
         "-" + moveAmount + "px"
       );
 
-      for (let i = 0; i < this.items.length; i++) {
-        this.items[i].classList.add("startOffset");
+      for (let i = 0; i < this._items.length; i++) {
+        this._items[i].classList.add("startOffset");
       }
 
-      let index = this.mod(this.front + noSteps - 1, this.totalItems);
+      let index = this._mod(this._front + noSteps - 1, this._totalItems);
       for (let i = 0; i < noSteps; i++) {
-        let el = this.elements[index].cloneNode(true);
+        let el = this._elements[index].cloneNode(true);
         el.classList.add("startOffset");
-        this.items[0].parentNode.insertBefore(el, this.items[0]);
-        index = this.mod(index - 1, this.totalItems);
+        this._items[0].parentNode.insertBefore(el, this._items[0]);
+        index = this._mod(index - 1, this._totalItems);
       }
 
-      for (let i = 0; i < this.displayNo + noSteps; i++) {
-        this.items[i].classList.add("active");
+      for (let i = 0; i < this._displayNo + noSteps; i++) {
+        this._items[i].classList.add("active");
       }
 
       // Wait for animation to end
       setTimeout(() => {
-        for (let j = 0; j < this.items.length; j++) {
-          this.items[j].classList.remove("slide");
-          this.items[j].classList.remove("startOffset");
+        for (let j = 0; j < this._items.length; j++) {
+          this._items[j].classList.remove("slide");
+          this._items[j].classList.remove("startOffset");
         }
 
         // Remove the extra elements
         for (let i = 0; i < noSteps; i++) {
-          this.items[this.totalItems].remove();
+          this._items[this._totalItems].remove();
         }
 
-        this.enableInteraction();
-      }, this.duration + 10);
+        this._enableInteraction();
+      }, this._duration + 10);
     }
   }
 
-  moveNext() {
-    this.moveCarouselRight(this.moveAmount);
+  _moveNext() {
+    this._moveCarouselRight(this._moveAmount);
   }
 
-  movePrev() {
-    this.moveCarouselLeft(this.moveAmount);
+  _movePrev() {
+    this._moveCarouselLeft(this._moveAmount);
   }
 
-  addRotationEventListeners() {
-    // Add rotate time if provided
-    let offset, duration, direction;
-    try {
-      offset = this.settings.display.startOffset;
-    } catch (e) {
-      offset = 0;
-    }
-    try {
-      duration = this.settings.display.duration;
-    } catch (e) {
-      duration = 0;
-    }
-    try {
-      if (
-        this.settings.display.direction === "right" ||
-        this.settings.display.direction === "left"
-      ) {
-        direction = this.settings.display.direction;
-      } else {
-        direction = "right";
-      }
-    } catch (e) {
-      direction = "right";
-    }
-
-    let moveNextInterval = (duration) => {
-      return window.setInterval(() => {
-        this.moveNext();
-      }, duration);
-    }
-
-    let movePrevInterval = (duration) => {
-      return window.setInterval(() => {
-        this.movePrev();
-      }, duration);
-    }
-
-    console.log(offset, duration, direction);
-    if (duration > 0) {
-      if (direction) {
-        if (direction === "right") {
-          setTimeout(() => {
-            this.rotation = moveNextInterval(duration);
-          }, offset);
-        } else {
-          setTimeout(() => {
-            this.rotation = movePrevInterval(duration);
-          }, offset);
-        }
-      }
-    }
-  }
-
-  removeRotationEventListeners(){
-      window.clearInterval(this.rotation);
-  }
-
-  updateDisplayDuration(duration) {
-    if (duration < 0){
-      throw 'Duration cannot be negative';
+  _updateDisplayDuration(duration) {
+    if (duration < 0) {
+      throw "Duration cannot be negative";
     }
     if (duration === 0) {
-      this.duration = 0;
-      this.removeRotationEventListeners();
+      this._duration = 0;
+      this._removeRotationEventListeners();
     } else {
-      if (this.duration === 0) {
-        this.duration = duration;
-        this.addRotationEventListeners();
+      if (this._duration === 0) {
+        this._duration = duration;
+        this._addRotationEventListeners();
       }
     }
     return true;
   }
-  
 }

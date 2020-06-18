@@ -1,4 +1,3 @@
-/* Carousel*/
 :root{
     --moveAmount: -100%;
     --timingFunction: "ease";
@@ -22,21 +21,17 @@
 
 .carousel-item {
     display: flex;
-    
     justify-content: center;
     opacity: 0;
     position: absolute;
     top: 0;
-   
     z-index: 100;
-    /*transition: all .5s, opacity .5s, z-index .5s;*/
 }
 
 .carousel-item.active {
     opacity: 1;
     position: relative;
     z-index: 900;
-    /*transition: all .5s, opacity .5s, z-index .5s;*/
 }
 
 .slide {
@@ -75,10 +70,6 @@
         -webkit-transform: translateX(0);
     }
 }
-
-
-
-
 
 /** BUTTONS **/
 .carousel-button-next,
