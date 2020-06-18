@@ -35,68 +35,68 @@ class Carousel {
     };
 
     // Check that the object contains the required values
-    if (settings?.id === undefined) {
+    if (settings.id === undefined) {
       return false;
     } else {
       this._id = settings.id;
     }
 
     // Check for other settings and set to default if not provided
-    if (settings?.rotation?.amount === undefined) {
+    if (settings.rotation.amount === undefined) {
       this._moveAmount = defaults.rotation.amount;
     } else {
       this._moveAmount = settings.rotation.amount;
     }
 
-    if (settings?.rotation?.duration === undefined) {
+    if (settings.rotation.duration === undefined) {
       this._duration = defaults.rotation.duration;
     } else {
       this._duration = settings.rotation.duration;
     }
 
-    if (settings?.rotation?.timingFunction === undefined) {
+    if (settings.rotation.timingFunction === undefined) {
       this._timingFunction = defaults.rotation.timingFunction;
     } else {
       this._timingFunction = settings.rotation.timingFunction;
     }
 
-    if (settings?.buttons?.hide === undefined) {
+    if (settings.buttons.hide === undefined) {
       this._buttonsHide = defaults.buttons.hide;
     } else {
       this._buttonsHide = settings.buttons.hide;
     }
 
-    if (settings?.buttons?.disableForSingle === undefined) {
+    if (settings.buttons.disableForSingle === undefined) {
       this._disableForSingle = defaults.buttons.disableForSingle;
     } else {
       this._disableForSingle = settings.buttons.disableForSingle;
     }
 
-    if (settings?.display?.number === undefined) {
+    if (settings.display.number === undefined) {
       this._displayNo = defaults.display.number;
     } else {
       this._displayNo = settings.display.number;
     }
 
-    if (settings?.display?.duration === undefined) {
+    if (settings.display.duration === undefined) {
       this._rotationDuration = defaults.display.duration;
     } else {
       this._rotationDuration = settings.display.duration;
     }
 
-    if (settings?.display?.startOffset === undefined) {
+    if (settings.display.startOffset === undefined) {
       this._startOffset = defaults.display.startOffset;
     } else {
       this._startOffset = settings.display.startOffset;
     }
 
-    if (settings?.display?.direction === undefined) {
+    if (settings.display.direction === undefined) {
       this._direction = defaults.display.direction;
     } else {
       this._direction = settings.display.direction;
     }
 
-    if (settings?.class?.itemClassName === undefined) {
+    if (settings.class.itemClassName === undefined) {
       this._itemClassName = defaults.class.itemClassName;
     } else {
       this._itemClassName = settings.class.itemClassName;
