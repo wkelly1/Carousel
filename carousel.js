@@ -245,8 +245,8 @@ class Carousel {
     }
   }
 
-  async _removeAutoRotationCallbacks() {
-    return window.clearInterval(this._rotation);
+  _removeAutoRotationCallbacks() {
+    window.clearInterval(this._rotation);
   }
 
   _mod(n, m) {
@@ -395,20 +395,20 @@ class Carousel {
 
   // Public methods
   updateSettings(settings) {
-    this._removeAutoRotationCallbacks();
-    console.log("Waiting...");
-    this._animationTimeout.then(() => {
-      console.log("Finished");
-      this._initializeSettings(settings);
-      this._setInitialSettings(settings);
-      this._addAutoRotationCallbacks();
-      this._settings = settings;
+    return new Promise((resolve, reject) => {
+      this._removeAutoRotationCallbacks();
+      this._animationTimeout.then(() => {
+        this._initializeSettings(settings);
+        this._setInitialSettings(settings);
+        this._addAutoRotationCallbacks();
+        this._settings = settings;
+        resolve("Settings updated");
+      });
     });
   }
 
   moveNext() {
     this._animationTimeout = this._moveCarouselRight(this._moveAmount);
-    console.log(this._animationTimeout);
   }
 
   movePrev() {
