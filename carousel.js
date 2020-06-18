@@ -203,12 +203,12 @@ class Carousel {
 
     if (next) {
       next.addEventListener("click", () => {
-        this._moveNext();
+        this.moveNext();
       });
     }
     if (prev) {
       prev.addEventListener("click", () => {
-        this._movePrev();
+        this.movePrev();
       });
     }
   }
@@ -220,13 +220,13 @@ class Carousel {
     // Add rotate time if provided
     let moveNextInterval = (duration) => {
       return window.setInterval(() => {
-        this._moveNext();
+        this.moveNext();
       }, duration);
     };
 
     let movePrevInterval = (duration) => {
       return window.setInterval(() => {
-        this._movePrev();
+        this.movePrev();
       }, duration);
     };
 
@@ -245,8 +245,8 @@ class Carousel {
     }
   }
 
-  _removeRotationEventListeners() {
-    window.clearInterval(this._rotation);
+  async _removeAutoRotationCallbacks() {
+    return window.clearInterval(this._rotation);
   }
 
   _mod(n, m) {
@@ -262,116 +262,119 @@ class Carousel {
   }
 
   _moveCarouselLeft(noSteps) {
-    // Check if carousel is moving, if not, allow interaction
-    if (!this._moving) {
-      // temporarily disable interactivity
-      this._disableInteraction();
+    return new Promise((resolve, reject) => {
+      // Check if carousel is moving, if not, allow interaction
+      if (!this._moving) {
+        // temporarily disable interactivity
+        this._disableInteraction();
 
-      this._front = this._mod(this._front + noSteps, this._totalItems);
-      this._back = this._mod(this._back + noSteps, this._totalItems);
+        this._front = this._mod(this._front + noSteps, this._totalItems);
+        this._back = this._mod(this._back + noSteps, this._totalItems);
 
-      // Slide all of the elements over
-      let moveAmount = 0; //noSteps * this._items[0].offsetWidth;
-      for (let i = 0; i < noSteps; i++) {
-        moveAmount += this._items[i].offsetWidth;
-      }
-      document.documentElement.style.setProperty(
-        "--moveAmount",
-        "-" + moveAmount + "px"
-      );
+        // Slide all of the elements over
+        let moveAmount = 0; //noSteps * this._items[0].offsetWidth;
+        for (let i = 0; i < noSteps; i++) {
+          moveAmount += this._items[i].offsetWidth;
+        }
+        document.documentElement.style.setProperty(
+          "--moveAmount",
+          "-" + moveAmount + "px"
+        );
 
-      let diff = this._totalItems - noSteps;
+        let diff = this._totalItems - noSteps;
 
-      // Add the missing elements
-      let index = this._mod(this._front + diff, this._totalItems);
-      for (let i = 0; i < noSteps; i++) {
-        let el = this._elements[index].cloneNode(true);
-        el.classList.remove("active");
-        this._container.firstElementChild.appendChild(el);
-        index = this._mod(index + 1, this._totalItems);
-      }
-
-      for (let i = 0; i < this._displayNo + noSteps; i++) {
-        this._items[i].classList.add("active");
-      }
-
-      for (let i = 0; i < this._items.length; i++) {
-        this._items[i].classList.add("slide");
-      }
-
-      // Wait for animation to end
-      setTimeout(() => {
-        for (let j = 0; j < this._items.length; j++) {
-          this._items[j].classList.remove("slide");
+        // Add the missing elements
+        let index = this._mod(this._front + diff, this._totalItems);
+        for (let i = 0; i < noSteps; i++) {
+          let el = this._elements[index].cloneNode(true);
+          el.classList.remove("active");
+          this._container.firstElementChild.appendChild(el);
+          index = this._mod(index + 1, this._totalItems);
         }
 
-        for (let j = 0; j < noSteps; j++) {
-          this._items[0].remove();
+        for (let i = 0; i < this._displayNo + noSteps; i++) {
+          this._items[i].classList.add("active");
         }
 
-        this._enableInteraction();
-      }, this._duration + 10);
-    }
+        for (let i = 0; i < this._items.length; i++) {
+          this._items[i].classList.add("slide");
+        }
+
+        // Wait for animation to end
+        this._animationTimeout = setTimeout(() => {
+          for (let j = 0; j < this._items.length; j++) {
+            this._items[j].classList.remove("slide");
+          }
+
+          for (let j = 0; j < noSteps; j++) {
+            this._items[0].remove();
+          }
+
+          this._enableInteraction();
+          resolve("done");
+        }, this._duration + 10);
+      } else {
+        resolve("done");
+      }
+    });
   }
 
   _moveCarouselRight(noSteps) {
-    // Check if carousel is moving, if not, allow interaction
-    if (!this._moving) {
-      // temporarily disable interactivity
-      this._disableInteraction();
+    return new Promise((resolve, reject) => {
+      // Check if carousel is moving, if not, allow interaction
+      if (!this._moving) {
+        // temporarily disable interactivity
+        this._disableInteraction();
 
-      this._front = this._mod(this._front - noSteps, this._totalItems);
-      this._back = this._mod(this._back - noSteps, this._totalItems);
+        this._front = this._mod(this._front - noSteps, this._totalItems);
+        this._back = this._mod(this._back - noSteps, this._totalItems);
 
-      // Slide all of the elements over
-      let moveAmount = 0; //noSteps * this._items[0].offsetWidth;
-      for (let i = 0; i < noSteps; i++) {
-        moveAmount += this._items[i].offsetWidth;
-      }
-      document.documentElement.style.setProperty(
-        "--moveAmount",
-        "-" + moveAmount + "px"
-      );
-
-      for (let i = 0; i < this._items.length; i++) {
-        this._items[i].classList.add("startOffset");
-      }
-
-      let index = this._mod(this._front + noSteps - 1, this._totalItems);
-      for (let i = 0; i < noSteps; i++) {
-        let el = this._elements[index].cloneNode(true);
-        el.classList.add("startOffset");
-        this._items[0].parentNode.insertBefore(el, this._items[0]);
-        index = this._mod(index - 1, this._totalItems);
-      }
-
-      for (let i = 0; i < this._displayNo + noSteps; i++) {
-        this._items[i].classList.add("active");
-      }
-
-      // Wait for animation to end
-      setTimeout(() => {
-        for (let j = 0; j < this._items.length; j++) {
-          this._items[j].classList.remove("slide");
-          this._items[j].classList.remove("startOffset");
-        }
-
-        // Remove the extra elements
+        // Slide all of the elements over
+        let moveAmount = 0; //noSteps * this._items[0].offsetWidth;
         for (let i = 0; i < noSteps; i++) {
-          this._items[this._totalItems].remove();
+          moveAmount += this._items[i].offsetWidth;
+        }
+        document.documentElement.style.setProperty(
+          "--moveAmount",
+          "-" + moveAmount + "px"
+        );
+
+        for (let i = 0; i < this._items.length; i++) {
+          this._items[i].classList.add("startOffset");
         }
 
-        this._enableInteraction();
-      }, this._duration + 10);
-    }
-  }
+        let index = this._mod(this._front + noSteps - 1, this._totalItems);
+        for (let i = 0; i < noSteps; i++) {
+          let el = this._elements[index].cloneNode(true);
+          el.classList.add("startOffset");
+          this._items[0].parentNode.insertBefore(el, this._items[0]);
+          index = this._mod(index - 1, this._totalItems);
+        }
 
-  _moveNext() {
-    this._moveCarouselRight(this._moveAmount);
-  }
+        for (let i = 0; i < this._displayNo + noSteps; i++) {
+          this._items[i].classList.add("active");
+        }
 
-  _movePrev() {
-    this._moveCarouselLeft(this._moveAmount);
+        // Wait for animation to end
+        this._animationTimeout = setTimeout(() => {
+          for (let j = 0; j < this._items.length; j++) {
+            this._items[j].classList.remove("slide");
+            this._items[j].classList.remove("startOffset");
+          }
+
+          // Remove the extra elements
+          for (let i = 0; i < noSteps; i++) {
+            this._items[this._totalItems].remove();
+          }
+
+          this._enableInteraction();
+
+          resolve("done");
+        }, this._duration + 10);
+      } else {
+        resolve("done");
+      }
+    });
   }
 
   _updateDisplayDuration(duration) {
@@ -388,5 +391,27 @@ class Carousel {
       }
     }
     return true;
+  }
+
+  // Public methods
+  updateSettings(settings) {
+    this._removeAutoRotationCallbacks();
+    console.log("Waiting...");
+    this._animationTimeout.then(() => {
+      console.log("Finished");
+      this._initializeSettings(settings);
+      this._setInitialSettings(settings);
+      this._addAutoRotationCallbacks();
+      this._settings = settings;
+    });
+  }
+
+  moveNext() {
+    this._animationTimeout = this._moveCarouselRight(this._moveAmount);
+    console.log(this._animationTimeout);
+  }
+
+  movePrev() {
+    this._animationTimeout = this._moveCarouselLeft(this._moveAmount);
   }
 }
