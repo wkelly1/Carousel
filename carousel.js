@@ -7,85 +7,7 @@ class Carousel {
       throw "Missing required settings";
     }
 
-  
-
-    // Set timing function
-    document.documentElement.style.setProperty(
-      "--timingFunction",
-      this._timingFunction
-    );
-
-    // Set duration of animation
-    document.documentElement.style.setProperty(
-      "--duration",
-      this._duration + "ms"
-    );
-
-    this._container = document.getElementById(this._id); // The main container
-    if (!this._container){
-      throw "Container does not exist";
-    }
-
-    this._items = this._container.getElementsByClassName(this._itemClassName); // The items of the carousel
-    this._totalItems = this._items.length; // The total number of items
-
-    // Set up circular queue
-    this._front = 0;
-    this._back = this._displayNo - 1;
-    this._elements = [...this._items];
-
-    // Hide buttons if specified
-    if (this._buttonsHide) {
-      let buttons = this._container.getElementsByClassName(
-        "carousel-button-next"
-      );
-      for (let i = 0; i < buttons.length; i++) {
-        buttons[i].style.display = "none";
-      }
-      buttons = this._container.getElementsByClassName("carousel-button-prev");
-      for (let i = 0; i < buttons.length; i++) {
-        buttons[i].style.display = "none";
-      }
-    }
-
-    // Hide buttons if only one element if specified
-    if (this._disableForSingle && this._totalItems === 1) {
-      this._duration = 0;
-      let buttons = this._container.getElementsByClassName(
-        "carousel-button-next"
-      );
-      for (let i = 0; i < buttons.length; i++) {
-        buttons[i].style.display = "none";
-      }
-      buttons = this._container.getElementsByClassName("carousel-button-prev");
-      for (let i = 0; i < buttons.length; i++) {
-        buttons[i].style.display = "none";
-      }
-    }
-
-    this._moving = false; // Stores whether an animation is currently occurring
-
-    // Displays all elements
-    for (let i = 0; i < this._displayNo; i++) {
-      if (this._items[i]) {
-        this._items[i].classList.add("active");
-      }
-    }
-
-    // Make copies of elements if required
-    if (this._displayNo > this._totalItems) {
-      let index = 0;
-      for (let i = 0; i < this._displayNo - this._totalItems; i++) {
-        let el = this._elements[index].cloneNode(true);
-        this._container.firstElementChild.appendChild(el);
-        index = this._mod(index + 1, this._totalItems);
-      }
-    }
-
-    // Lock the width of the container
-    this._container.style.maxWidth = this._container.clientWidth + "px";
-    this._container.style.width = "100%";
-
+    this._setInitialSettings(this._settings);
     this._addButtonEventListeners();
     this._addAutoRotationCallbacks();
   }
@@ -181,6 +103,85 @@ class Carousel {
     }
 
     return true;
+  }
+
+  _setInitialSettings(settings) {
+    // Set timing function
+    document.documentElement.style.setProperty(
+      "--timingFunction",
+      this._timingFunction
+    );
+
+    // Set duration of animation
+    document.documentElement.style.setProperty(
+      "--duration",
+      this._duration + "ms"
+    );
+
+    this._container = document.getElementById(this._id); // The main container
+    if (!this._container) {
+      throw "Container does not exist";
+    }
+
+    this._items = this._container.getElementsByClassName(this._itemClassName); // The items of the carousel
+    this._totalItems = this._items.length; // The total number of items
+
+    // Set up circular queue
+    this._front = 0;
+    this._back = this._displayNo - 1;
+    this._elements = [...this._items];
+
+    // Hide buttons if specified
+    if (this._buttonsHide) {
+      let buttons = this._container.getElementsByClassName(
+        "carousel-button-next"
+      );
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style.display = "none";
+      }
+      buttons = this._container.getElementsByClassName("carousel-button-prev");
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style.display = "none";
+      }
+    }
+
+    // Hide buttons if only one element if specified
+    if (this._disableForSingle && this._totalItems === 1) {
+      this._duration = 0;
+      let buttons = this._container.getElementsByClassName(
+        "carousel-button-next"
+      );
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style.display = "none";
+      }
+      buttons = this._container.getElementsByClassName("carousel-button-prev");
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style.display = "none";
+      }
+    }
+
+    this._moving = false; // Stores whether an animation is currently occurring
+
+    // Displays all elements
+    for (let i = 0; i < this._displayNo; i++) {
+      if (this._items[i]) {
+        this._items[i].classList.add("active");
+      }
+    }
+
+    // Make copies of elements if required
+    if (this._displayNo > this._totalItems) {
+      let index = 0;
+      for (let i = 0; i < this._displayNo - this._totalItems; i++) {
+        let el = this._elements[index].cloneNode(true);
+        this._container.firstElementChild.appendChild(el);
+        index = this._mod(index + 1, this._totalItems);
+      }
+    }
+
+    // Lock the width of the container
+    this._container.style.maxWidth = this._container.clientWidth + "px";
+    this._container.style.width = "100%";
   }
 
   /**
