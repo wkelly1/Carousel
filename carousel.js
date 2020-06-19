@@ -245,7 +245,7 @@ class Carousel {
 
   _handleResizing() {
     if (this._responsive) {
-      _this._setChildrenWidth();
+      this._setChildrenWidth();
     }
   }
 
