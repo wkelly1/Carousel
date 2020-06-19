@@ -21,12 +21,11 @@ body{
 
 .example-item{
     background-color: lightblue;
-    width: 200px; 
-    height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 1px dotted black;
+    width: 50px;
 }
 
 .example-button{

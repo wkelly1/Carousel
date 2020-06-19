@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="../carousel.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../carousel.min.css" />
+    <script src="../carousel.js"></script>
+    <link rel="stylesheet" type="text/css" href="../carousel.css" />
     <link rel="stylesheet" type="text/css" href="main.css" />
     <title>Carousel</title>
   </head>
@@ -15,7 +15,7 @@
       style="background-color: lightcoral;"
       id="example"
     >
-      <div class="carousel">
+      <div class="carousel" style="width: max-content;">
         <div class="carousel-item">
           <div class="example-item">
             1
@@ -66,18 +66,22 @@
       duration: 1000, // How long the movement takes
     },
     buttons: {
-      hide: false, // Whether to hide the buttons
+      hide: true, // Whether to hide the buttons
       disableForSingle: false, // Disables the buttons when there is only one element in the carousel
     },
     display: {
-      number: 5, // Number of elements to display at a time,
-      duration: 2000, // If specified then the carousel will rotate every time that number of milliseconds has elapsed
+      number: 2, // Number of elements to display at a time,
+      duration: 1000, // If specified then the carousel will rotate every time that number of milliseconds has elapsed
       startOffset: 0, // Waits this long before auto rotating,
       direction: "left", // The direction to move the carousel either left or right
     },
     class: {
       itemClassName: "carousel-item", // Used if you have altered the class for an item
     },
+    fit: {
+      fitToParent: false,
+      fitToChildren: true,
+    }
   };
 
   let example = new Carousel(settings);

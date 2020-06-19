@@ -10,6 +10,10 @@ class Carousel {
     this._setInitialSettings(this._settings);
     this._addButtonEventListeners();
     this._addAutoRotationCallbacks();
+
+    window.onresize = () => {
+      this._setChildrenWidth();
+    };
   }
 
   _initializeSettings(settings) {
@@ -31,6 +35,10 @@ class Carousel {
       },
       class: {
         itemClassName: "carousel-item", // Used if you have altered the class for an item
+      },
+      fit: {
+        fitToChildren: true,
+        fitToParent: false,
       },
     };
 
@@ -102,6 +110,18 @@ class Carousel {
       this._itemClassName = settings.class.itemClassName;
     }
 
+    if (settings.fit.fitToChildren === undefined) {
+      this._fitToChildren = defaults.fit.fitToChildren;
+    } else {
+      this._fitToChildren = settings.fit.fitToChildren;
+    }
+
+    if (settings.fit.fitToParent === undefined) {
+      this._fitToParent = defaults.fit.fitToParent;
+    } else {
+      this._fitToParent = settings.fit.fitToParent;
+    }
+
     return true;
   }
 
@@ -125,6 +145,9 @@ class Carousel {
 
     this._items = this._container.getElementsByClassName(this._itemClassName); // The items of the carousel
     this._totalItems = this._items.length; // The total number of items
+
+    // Sets the children to the size of the parent
+    this._setChildrenWidth();
 
     // Set up circular queue
     this._front = 0;
@@ -180,8 +203,19 @@ class Carousel {
     }
 
     // Lock the width of the container
-    this._container.style.maxWidth = this._container.clientWidth + "px";
-    this._container.style.width = "100%";
+    if (this._fitToChildren) {
+      this._container.style.maxWidth = this._container.clientWidth + "px";
+      this._container.style.width = "100%";
+    }
+  }
+
+  _setChildrenWidth() {
+    if (this._fitToParent) {
+      for (let i = 0; i < this._totalItems; i++) {
+        this._items[i].firstElementChild.style.width =
+          this._container.clientWidth / this._displayNo + "px";
+      }
+    }
   }
 
   /**
@@ -276,6 +310,7 @@ class Carousel {
         for (let i = 0; i < noSteps; i++) {
           moveAmount += this._items[i].offsetWidth;
         }
+        console.log(moveAmount);
         document.documentElement.style.setProperty(
           "--moveAmount",
           "-" + moveAmount + "px"
@@ -291,6 +326,9 @@ class Carousel {
           this._container.firstElementChild.appendChild(el);
           index = this._mod(index + 1, this._totalItems);
         }
+
+        // Makes sure that the children are the correct size
+        this._setChildrenWidth();
 
         for (let i = 0; i < this._displayNo + noSteps; i++) {
           this._items[i].classList.add("active");
@@ -350,6 +388,9 @@ class Carousel {
           this._items[0].parentNode.insertBefore(el, this._items[0]);
           index = this._mod(index - 1, this._totalItems);
         }
+
+        // Makes sure that the children are the correct size
+        this._setChildrenWidth();
 
         for (let i = 0; i < this._displayNo + noSteps; i++) {
           this._items[i].classList.add("active");
