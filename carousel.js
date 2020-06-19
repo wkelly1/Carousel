@@ -12,7 +12,7 @@ class Carousel {
     this._addAutoRotationCallbacks();
 
     window.onresize = () => {
-      this._setChildrenWidth();
+      this._handleResizing();
     };
   }
 
@@ -50,76 +50,110 @@ class Carousel {
     }
 
     // Check for other settings and set to default if not provided
-    if (settings.rotation.amount === undefined) {
+    if (settings.rotation === undefined) {
       this._moveAmount = defaults.rotation.amount;
-    } else {
-      this._moveAmount = settings.rotation.amount;
-    }
-
-    if (settings.rotation.duration === undefined) {
       this._duration = defaults.rotation.duration;
-    } else {
-      this._duration = settings.rotation.duration;
-    }
-
-    if (settings.rotation.timingFunction === undefined) {
       this._timingFunction = defaults.rotation.timingFunction;
     } else {
-      this._timingFunction = settings.rotation.timingFunction;
+      if (settings.rotation.amount === undefined) {
+        this._moveAmount = defaults.rotation.amount;
+      } else {
+        this._moveAmount = settings.rotation.amount;
+      }
+
+      if (settings.rotation.duration === undefined) {
+        this._duration = defaults.rotation.duration;
+      } else {
+        this._duration = settings.rotation.duration;
+      }
+
+      if (settings.rotation.timingFunction === undefined) {
+        this._timingFunction = defaults.rotation.timingFunction;
+      } else {
+        this._timingFunction = settings.rotation.timingFunction;
+      }
     }
 
-    if (settings.buttons.hide === undefined) {
+    if (settings.buttons === undefined) {
       this._buttonsHide = defaults.buttons.hide;
-    } else {
-      this._buttonsHide = settings.buttons.hide;
-    }
-
-    if (settings.buttons.disableForSingle === undefined) {
       this._disableForSingle = defaults.buttons.disableForSingle;
     } else {
-      this._disableForSingle = settings.buttons.disableForSingle;
+      if (settings.buttons.hide === undefined) {
+        this._buttonsHide = defaults.buttons.hide;
+      } else {
+        this._buttonsHide = settings.buttons.hide;
+      }
+
+      if (settings.buttons.disableForSingle === undefined) {
+        this._disableForSingle = defaults.buttons.disableForSingle;
+      } else {
+        this._disableForSingle = settings.buttons.disableForSingle;
+      }
     }
 
-    if (settings.display.number === undefined) {
+    if (settings.display === undefined) {
       this._displayNo = defaults.display.number;
-    } else {
-      this._displayNo = settings.display.number;
-    }
-
-    if (settings.display.duration === undefined) {
       this._rotationDuration = defaults.display.duration;
-    } else {
-      this._rotationDuration = settings.display.duration;
-    }
-
-    if (settings.display.startOffset === undefined) {
       this._startOffset = defaults.display.startOffset;
-    } else {
-      this._startOffset = settings.display.startOffset;
-    }
-
-    if (settings.display.direction === undefined) {
       this._direction = defaults.display.direction;
     } else {
-      this._direction = settings.display.direction;
+      if (settings.display.number === undefined) {
+        this._displayNo = defaults.display.number;
+      } else {
+        this._displayNo = settings.display.number;
+      }
+
+      if (settings.display.duration === undefined) {
+        this._rotationDuration = defaults.display.duration;
+      } else {
+        this._rotationDuration = settings.display.duration;
+      }
+
+      if (settings.display.startOffset === undefined) {
+        this._startOffset = defaults.display.startOffset;
+      } else {
+        this._startOffset = settings.display.startOffset;
+      }
+
+      if (settings.display.direction === undefined) {
+        this._direction = defaults.display.direction;
+      } else {
+        this._direction = settings.display.direction;
+      }
     }
 
-    if (settings.class.itemClassName === undefined) {
+    if (settings.fit === undefined) {
       this._itemClassName = defaults.class.itemClassName;
     } else {
-      this._itemClassName = settings.class.itemClassName;
+      if (settings.class.itemClassName === undefined) {
+        this._itemClassName = defaults.class.itemClassName;
+      } else {
+        this._itemClassName = settings.class.itemClassName;
+      }
     }
 
-    if (settings.fit.fitToChildren === undefined) {
+    if (settings.fit === undefined) {
       this._fitToChildren = defaults.fit.fitToChildren;
-    } else {
-      this._fitToChildren = settings.fit.fitToChildren;
-    }
-
-    if (settings.fit.fitToParent === undefined) {
       this._fitToParent = defaults.fit.fitToParent;
+      this._responsive = defaults.fit.responsive;
     } else {
-      this._fitToParent = settings.fit.fitToParent;
+      if (settings.fit.fitToChildren === undefined) {
+        this._fitToChildren = defaults.fit.fitToChildren;
+      } else {
+        this._fitToChildren = settings.fit.fitToChildren;
+      }
+
+      if (settings.fit.fitToParent === undefined) {
+        this._fitToParent = defaults.fit.fitToParent;
+      } else {
+        this._fitToParent = settings.fit.fitToParent;
+      }
+
+      if (settings.fit.responsive === undefined) {
+        this._responsive = defaults.fit.responsive;
+      } else {
+        this._responsive = settings.fit.responsive;
+      }
     }
 
     return true;
@@ -206,6 +240,12 @@ class Carousel {
     if (this._fitToChildren) {
       this._container.style.maxWidth = this._container.clientWidth + "px";
       this._container.style.width = "100%";
+    }
+  }
+
+  _handleResizing() {
+    if (this._responsive) {
+      _this._setChildrenWidth();
     }
   }
 
