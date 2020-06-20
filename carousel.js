@@ -288,11 +288,15 @@ class Carousel {
     }
   }
 
-  _startInterval(){
-    if (this._startOffset > 0){
-      setTimeout(() => {this._interval()}, this._startOffset);
+  _startInterval() {
+    if (this._startOffset > 0) {
+      setTimeout(() => {
+        this._interval();
+      }, this._startOffset);
     } else {
-      this._interval();
+      if (this._rotationDuration > 0) {
+        this._interval();
+      }
     }
   }
 
@@ -309,8 +313,7 @@ class Carousel {
           this._interval();
         }, this._rotationDuration);
       }
-    })
-    
+    });
   }
 
   _mod(n, m) {
@@ -467,12 +470,11 @@ class Carousel {
   // Public methods
   updateSettings(settings) {
     return new Promise((resolve, reject) => {
-
       this._animationTimeout.then(() => {
-        let wasMoving = !(this._rotationDuration === 0)
+        let wasMoving = !(this._rotationDuration === 0);
         this._initializeSettings(settings);
         this._setInitialSettings(settings);
-        if (settings.display.duration > 0 && !wasMoving){
+        if (settings.display.duration > 0 && !wasMoving) {
           this._startInterval();
         }
         this._settings = settings;
