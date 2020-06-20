@@ -25,14 +25,14 @@ body{
     align-items: center;
     justify-content: center;
     border: 1px dotted black;
-    width: 50px;
+    width: 200px;
+    height: 200px;
 }
 
 .example-button{
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
     background-color: white;
     display: flex;
-
     justify-content: center;
     padding-top: 7px;
     border-radius: 50%;

@@ -9,7 +9,8 @@ class Carousel {
 
     this._setInitialSettings(this._settings);
     this._addButtonEventListeners();
-    this._addAutoRotationCallbacks();
+    //this._addAutoRotationCallbacks();
+    this._interval();
 
     window.onresize = () => {
       this._handleResizing();
@@ -287,40 +288,21 @@ class Carousel {
     }
   }
 
-  /**
-   * Adds the call backs to make the carousel automatically rotate
-   */
-  _addAutoRotationCallbacks() {
-    // Add rotate time if provided
-    let moveNextInterval = (duration) => {
-      return window.setInterval(() => {
-        this.moveNext();
-      }, duration);
-    };
-
-    let movePrevInterval = (duration) => {
-      return window.setInterval(() => {
-        this.movePrev();
-      }, duration);
-    };
-
-    if (this._rotationDuration > 0) {
-      if (this._direction) {
-        if (this._direction === "right") {
-          setTimeout(() => {
-            this._rotation = moveNextInterval(this._rotationDuration);
-          }, this._startOffset);
-        } else {
-          setTimeout(() => {
-            this._rotation = movePrevInterval(this._rotationDuration);
-          }, this._startOffset);
-        }
-      }
+  _interval() {
+    if (this._direction === "right") {
+      this.moveNext();
+    } else {
+      this.movePrev();
     }
-  }
 
-  _removeAutoRotationCallbacks() {
-    window.clearInterval(this._rotation);
+    this._animationTimeout.then(() => {
+      if (this._rotationDuration > 0) {
+        setTimeout(() => {
+          this._interval();
+        }, this._rotationDuration);
+      }
+    })
+    
   }
 
   _mod(n, m) {
@@ -350,7 +332,7 @@ class Carousel {
         for (let i = 0; i < noSteps; i++) {
           moveAmount += this._items[i].offsetWidth;
         }
-        console.log(moveAmount);
+
         document.documentElement.style.setProperty(
           "--moveAmount",
           "-" + moveAmount + "px"
@@ -477,11 +459,14 @@ class Carousel {
   // Public methods
   updateSettings(settings) {
     return new Promise((resolve, reject) => {
-      this._removeAutoRotationCallbacks();
+
       this._animationTimeout.then(() => {
+        let wasMoving = !(this._rotationDuration === 0)
         this._initializeSettings(settings);
         this._setInitialSettings(settings);
-        this._addAutoRotationCallbacks();
+        if (settings.display.duration > 0 && !wasMoving){
+          this._interval();
+        }
         this._settings = settings;
         resolve("Settings updated");
       });
