@@ -10,7 +10,7 @@ class Carousel {
     this._setInitialSettings(this._settings);
     this._addButtonEventListeners();
     //this._addAutoRotationCallbacks();
-    this._interval();
+    this._startInterval();
 
     window.onresize = () => {
       this._handleResizing();
@@ -288,6 +288,14 @@ class Carousel {
     }
   }
 
+  _startInterval(){
+    if (this._startOffset > 0){
+      setTimeout(() => {this._interval()}, this._startOffset);
+    } else {
+      this._interval();
+    }
+  }
+
   _interval() {
     if (this._direction === "right") {
       this.moveNext();
@@ -465,7 +473,7 @@ class Carousel {
         this._initializeSettings(settings);
         this._setInitialSettings(settings);
         if (settings.display.duration > 0 && !wasMoving){
-          this._interval();
+          this._startInterval();
         }
         this._settings = settings;
         resolve("Settings updated");
