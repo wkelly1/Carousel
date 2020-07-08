@@ -62,7 +62,7 @@ let settings = {
 ```
 <script>
     let settings = {
-        id = "example" // Must link to an id
+        id: "example" // Must link to an id
     }
     let example = new Carousel(settings);
 </script>
