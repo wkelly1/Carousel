@@ -4,6 +4,10 @@
 
 ![Example](https://github.com/wkelly1/Carousel-js/blob/master/examples/images/example.png?raw=true)
 
+## Instillation
+```
+npm install carousel-slideshow --save
+```
 
 ## Options
 

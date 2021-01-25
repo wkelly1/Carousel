@@ -1,6 +1,6 @@
 {
   "name": "carousel-slideshow",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "JavaScript library to display a carousel ",
   "main": "carousel.min.js",
   "directories": {
@@ -18,7 +18,7 @@
     "Slideshow"
   ],
   "author": "Will Kelly",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/wkelly1/Carousel/issues"
   },
