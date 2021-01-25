@@ -1,5 +1,7 @@
 # Carousel.js
 
+[![npm version](https://shields.io/npm/v/carousel-slideshow)](https://www.npmjs.com/package/carousel-slideshow)
+
 ## [See the example here](https://wkelly1.github.io/Carousel/index.html)
 
 ![Example](https://github.com/wkelly1/Carousel-js/blob/master/examples/images/example.png?raw=true)
