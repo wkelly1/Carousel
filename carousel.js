@@ -495,3 +495,10 @@ class Carousel {
     this._animationTimeout = this._moveCarouselLeft(this._moveAmount);
   }
 }
+
+if (typeof exports !== 'undefined') {
+  if (typeof module !== 'undefined' && module.exports) {
+    exports = module.exports = Carousel;
+  }
+  exports.Carousel = Carousel;
+}
