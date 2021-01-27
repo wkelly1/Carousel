@@ -1,6 +1,8 @@
 # Carousel.js
 
 [![npm version](https://shields.io/npm/v/carousel-slideshow)](https://www.npmjs.com/package/carousel-slideshow)
+[![licence](https://shields.io/npm/l/carousel-slideshow)](https://github.com/wkelly1/Carousel/blob/master/LICENSE)
+[![npm downloads](https://shields.io/npm/dt/carousel-slideshow)](https://www.npmjs.com/package/carousel-slideshow)
 
 ## [See the example here](https://wkelly1.github.io/Carousel/index.html)
 
