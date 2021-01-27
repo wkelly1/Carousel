@@ -8,13 +8,13 @@
 
 ## Instillation
 
-```
+```console 
 npm install carousel-slideshow --save
 ```
 
 ## Options
 
-```
+```javascript
 let settings = {
     id: "example",
     rotation: {
