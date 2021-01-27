@@ -1,4 +1,8 @@
-// Carousel
+/**
+ * Carousel-slideshow library
+ * https://www.npmjs.com/package/carousel-slideshow
+ * Initial work: Will Kelly - https://github.com/wkelly1
+ */
 class Carousel {
   constructor(settings) {
     this._settings = settings;
